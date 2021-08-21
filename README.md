@@ -20,7 +20,9 @@ This is a stock modified kernel from SM-T975 with bugfixes and new features. And
 
 ## Used sources and toolchains
 Kernel sources - [here](https://opensource.samsung.com/uploadSearch?searchValue=SM-T975)
+
 Linaro GCC (gcc-linaro-4.9.4-2017.01-x86_64_aarch64-linux-gnu.tar.xz) - [here](https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/aarch64-linux-gnu/)
+
 Clang 10.0.6 by Google - [here](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/refs/heads/android11-dev/clang-r377782d/)
 
 ## Building
@@ -55,9 +57,9 @@ DTB currently not working. But if you want to test it, see Readmedtb.txt
 If your make task fails with "Permission denied", etc. and the failed file is a shell-script, use ```chmod +x script.sh```
 
 ## TODO List
-- [] Custom I/O schedulers
-- [] AnyKernel3
-- [] Schedutil governors
-- [] Performance and battery patches
-- [] Wakelock blockers
-- [] ExFAT, NFS, CIFS, F2FS support
+- [ ] Custom I/O schedulers
+- [ ] AnyKernel3
+- [ ] Schedutil governors
+- [ ] Performance and battery patches
+- [ ] Wakelock blockers
+- [ ] ExFAT, NFS, CIFS, F2FS support
