@@ -6269,7 +6269,14 @@ CONFIG_NETWORK_FILESYSTEMS=y
 # CONFIG_NFS_FS is not set
 # CONFIG_NFSD is not set
 # CONFIG_CEPH_FS is not set
-# CONFIG_CIFS is not set
+CONFIG_CIFS=y
+# CONFIG_CIFS_STATS is not set
+# CONFIG_CIFS_ALLOW_INSECURE_LEGACY is not set
+# CONFIG_CIFS_UPCALL is not set
+# CONFIG_CIFS_XATTR is not set
+# CONFIG_CIFS_DEBUG is not set
+# CONFIG_CIFS_DFS_UPCALL is not set
+# CONFIG_CIFS_SMB311 is not set
 # CONFIG_CODA_FS is not set
 # CONFIG_AFS_FS is not set
 CONFIG_NLS=y
