@@ -9,7 +9,7 @@
 struct kgsl_device;
 struct kgsl_process_private;
 
-#ifdef 0
+#if 0
 void kgsl_core_debugfs_init(void);
 void kgsl_core_debugfs_close(void);
 
