@@ -1,4 +1,7 @@
 #!/bin/bash
+rm -rf out
+
+ccache -M 4.5
 
 export ARCH=arm64
 mkdir out
