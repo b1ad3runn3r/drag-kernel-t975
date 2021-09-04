@@ -23,7 +23,7 @@ This is a stock modified kernel from SM-T975 with bugfixes and new features. And
 * Removed unnecessary debugging and watchdogs
 * Enhanced TCP methods (westwood is default, bbr, illinois, vegas, htcp, hstcp available)
 * Magisk patched already
-* ZEN, FIOPS, SIO, BFQ I/O schedulers(FIOPS default)
+* ZEN, FIOPS, SIO, BFQ, MAPLE I/O schedulers(FIOPS default)
 * Boeffla Wakelock blocker
 * Configurable fsync
 * configs tuning
