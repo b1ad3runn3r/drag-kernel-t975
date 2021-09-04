@@ -65,6 +65,10 @@ config IOSCHED_ZEN
 	FCFS, dispatches are back-inserted, deadlines ensure fairness.
         Should work best with devices where there is no travel delay.
 
+config IOSCHED_MAPLE
+	tristate "Maple I/O scheduler"
+	default y
+
 choice
 
 	prompt "Default I/O scheduler"
@@ -88,6 +92,9 @@ choice
 	config DEFAULT_SIO
 		bool "SIO" if IOSCHED_SIO=y
 
+	config DEFAULT_MAPLE
+		bool "MAPLE" if IOSCHED_MAPLE=y
+	
 	config DEFAULT_NOOP
 		bool "No-op"
 
@@ -101,6 +108,7 @@ config DEFAULT_IOSCHED
 	default "fiops" if DEFAULT_FIOPS
 	default "sio" if DEFAULT_SIO
 	default "noop" if DEFAULT_NOOP
+	default "maple" if DEFAULT_MAPLE
 
 config MQ_IOSCHED_DEADLINE
 	tristate "MQ deadline I/O scheduler"
