@@ -1,0 +1,9 @@
+anykernel/Image
+anykernel/dtb
+anykernel/*.zip
+aik/*
+!aik/bin/
+!aik/authors.txt
+!aik/cleanup.sh
+!aik/repackimg.sh
+!aik/unpackimg.sh

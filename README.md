@@ -7,6 +7,7 @@ Special thanx to:
 * https://github.com/engstk,
 * https://github.com/Jimbo77,
 * https://github.com/flar2 for their patches
+* https://github.com/osm0sis for his AnyKernel3 and Android Image Kitchen
 
 Very special thanx to https://github.com/Vntnox for his help on 4pda with building the kernel, dealing with the issues and looking for patches
 
@@ -56,27 +57,19 @@ git clone https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
 chmod +x bk.sh && ./bk.sh
 ```
 ## Post-building
-If you want to flash kernel with Odin:
-
-1) Get boot.img from required firmware.
-2) Patch it with Magisk, unpack it with [Android Image Kitchen](https://forum.xda-developers.com/t/tool-android-image-kitchen-unpack-repack-kernel-ramdisk-win-android-linux-mac.2073775/).
-3) Replace boot.img_kernel with your generated Image(located in out/arch/arm64/boot).
-4) Repack the kernel, rename your result to boot.img(or it won't flash) and put it into a tar archive name boot.img.tar.
-5) Flash with Odin into AP section(Auto-Reboot option does not matter).
-
-If you want to use AnyKernel3 variant, check its [repo](https://github.com/osm0sis/AnyKernel3)
+Both AnyKernel3 zip variant and Odin .tar variant are getting built automatically.
+Flashing using Odin : Odin - AP - boot.img.tar(autoreboot does not matter)
+Flashing using TWRP : TWRP - Install - DragKernel.zip
 
 ## Using DTB
-Altered DTB currently not working. But if you want to test it, see Readmedtb.txt
+Altered DTB currently not working. 
 
 ## Troubleshooting
 If your make task fails with "Permission denied", etc. and the failed file is a shell-script, use ```chmod +x script.sh```
 
 ## TODO List
 - [X] Custom I/O schedulers
-- [X] AnyKernel3
 - [X] Performance and battery patches
-- [X] Wakelock blocker
 - [ ] Experimental NTFS R/W support
 - [ ] VR I/O scheduler
 - [ ] Support for T970
