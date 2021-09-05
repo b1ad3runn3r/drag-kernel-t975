@@ -1,5 +1,5 @@
 # **DragKernel - a GTS7XL kernel**
----------------------------------------------------------
+
 ## Modified kernel for Samsung Galaxy Tab S7+(SM-T975)  
 Special thanx to:
 * https://github.com/ianmacd for his TWRP-compatible config
@@ -7,6 +7,11 @@ Special thanx to:
 * https://github.com/engstk,
 * https://github.com/Jimbo77,
 * https://github.com/flar2 for their patches
+* https://github.com/osm0sis for his AnyKernel3 and Android Image Kitchen
+* https://github.com/andip71 for Boeffla WL Blocker
+* https://github.com/tanish2k09 for K-Lapse livedisplay module
+
+Sorry for not saving authors of original commits in contributors, file in sources vary severely, so I had to check every commit by hand.
 
 Very special thanx to https://github.com/Vntnox for his help on 4pda with building the kernel, dealing with the issues and looking for patches
 
@@ -26,8 +31,12 @@ This is a stock modified kernel from SM-T975 with bugfixes and new features. And
 * ZEN, FIOPS, SIO, BFQ, MAPLE I/O schedulers(FIOPS default)
 * Boeffla Wakelock blocker
 * Configurable fsync
+* K-Lapse
+* Andrenoboost
 * configs tuning
 * and more...
+
+<span style="color:red">**GPU OC attempt failed.** </span>
 
 ## Used sources and toolchains
 Kernel sources - [here](https://opensource.samsung.com/uploadSearch?searchValue=SM-T975)
@@ -67,7 +76,11 @@ If you want to flash kernel with Odin:
 If you want to use AnyKernel3 variant, check its [repo](https://github.com/osm0sis/AnyKernel3)
 
 ## Using DTB
+<<<<<<< HEAD
 Altered DTB currently not working. But if you want to test it, see Readmedtb.txt
+=======
+Altered DTB currently not working - system does not boot with the included(both in tar and zip variants).
+>>>>>>> 10a3a5201 (added k-lapse to defconfig, updated README.md)
 
 ## Troubleshooting
 If your make task fails with "Permission denied", etc. and the failed file is a shell-script, use ```chmod +x script.sh```
