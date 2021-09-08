@@ -347,7 +347,7 @@
 	};
 
 	chosen {
-		bootargs = "rcupdate.rcu_expedited=1 rcu_nocbs=0-7 cgroup.memory=nokmem";
+		bootargs = "quiet rcupdate.rcu_expedited=1 rcu_nocbs=0-7 cgroup.memory=nokmem noirqdebug";
 	};
 
 	firmware: firmware {
