@@ -18,7 +18,7 @@ Very special thanx to https://github.com/Vntnox for his help on 4pda with buildi
 Если бы вы не отказались делать ядро на A11, то я бы не стал заниматься собственным :D
 
 ## Short description
-This is a stock modified kernel from SM-T975 with bugfixes and new features. Android R. Current FW version - T975XXU2BUC4
+This is a stock modified kernel from SM-T975 with bugfixes and new features. Android Rю
 
 ## Features
 * Wireguard support
@@ -65,12 +65,10 @@ git clone https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
 chmod +x bk.sh && ./bk.sh
 ```
 ## Post-building
-Both AnyKernel3 zip variant and Odin .tar variant are getting built automatically.
-Flashing using Odin : Odin - AP - boot.img.tar(autoreboot does not matter)
-Flashing using TWRP : TWRP - Install - DragKernel.zip
+AnyKernel3 variant is built automatically. You can install it either with TWRP or with Kernel Manager(e.g. FKM)
 
 ## Using DTB
-Altered DTB currently not working - system does not boot with the included(both in tar and zip variants).
+DTB are included to zip within build script execution, but GPU OC does not work.
 
 ## Troubleshooting
 If your make task fails with "Permission denied", etc. and the failed file is a shell-script, use ```chmod +x script.sh```
