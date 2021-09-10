@@ -76,11 +76,7 @@ If you want to flash kernel with Odin:
 If you want to use AnyKernel3 variant, check its [repo](https://github.com/osm0sis/AnyKernel3)
 
 ## Using DTB
-<<<<<<< HEAD
-Altered DTB currently not working. But if you want to test it, see Readmedtb.txt
-=======
 Altered DTB currently not working - system does not boot with the included(both in tar and zip variants).
->>>>>>> 10a3a5201 (added k-lapse to defconfig, updated README.md)
 
 ## Troubleshooting
 If your make task fails with "Permission denied", etc. and the failed file is a shell-script, use ```chmod +x script.sh```
