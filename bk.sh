@@ -4,11 +4,46 @@ rm -rf out
 ccache -M 4.5
 
 export ARCH=arm64
-mkdir out
 
-DTS_DIR=$(pwd)/out/arch/$ARCH/boot/dts
-RELEASE_DIR_ZIP=/home/amd64/drag-kernel-t975/release/anykernel
-RELEASE_DIR_TAR=/home/amd64/drag-kernel-t975/release/aik
+echo
+echo "Clean Repository"
+echo
+
+make clean & make mrproper
+#git clean -xfd # failsafe
+
+find . -name "*.orig" -type f -delete
+
+if [ -d out ]; then
+    rm -rf out;
+fi
+
+if [ -f "release/dtb" ]; then
+    rm release/dtb;
+fi
+if [ -f "release/Image.gz" ]; then
+    rm release/Image.gz
+fi
+if [ -f "release/Image" ]; then
+    rm release/Image
+fi
+if compgen -G "release/modules/system/vendor/lib/modules/*.ko" > /dev/null; then
+    rm release/modules/system/vendor/lib/modules/*.ko;
+fi
+#find "release/modules/system/vendor/lib/modules" -name "*.ko" -type f -delete
+
+if compgen -G "release/*.zip" > /dev/null; then
+    rm release/*.zip;
+fi
+#find "release" -name "*.zip" -type f -delete
+
+echo
+echo "Compile Source"
+echo
+
+mkdir -p out
+mkdir -p release/modules/system/vendor/lib/modules
+
 BUILD_CROSS_COMPILE=/home/amd64/toolchains/gcc-494/bin/aarch64-linux-gnu-
 KERNEL_LLVM_BIN=/home/amd64/toolchains/clang-r377782d/bin/clang
 CLANG_TRIPLE=aarch64-linux-gnu-
@@ -17,32 +52,28 @@ KERNEL_MAKE_ENV="DTC_EXT=$(pwd)/tools/dtc CONFIG_BUILD_ARM64_DT_OVERLAY=y"
 make -j$(nproc) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE vendor/gts7xl_eur_open_defconfig
 make -j$(nproc) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE
 
-cp $(pwd)/out/arch/$ARCH/boot/Image $(pwd)/out/Image
-cat ${DTS_DIR}/vendor/qcom/*.dtb > $(pwd)/out/dtb
+cat out/arch/arm64/boot/dts/vendor/qcom/kona-v2.1.dtb \
+    out/arch/arm64/boot/dts/vendor/qcom/kona-v2.dtb \
+    out/arch/arm64/boot/dts/vendor/qcom/kona.dtb \
+    > out/arch/arm64/boot/dtb
 
-rm $RELEASE_DIR_ZIP/DragKernel.zip
-rm $RELEASE_DIR_ZIP/Image
-rm $RELEASE_DIR_ZIP/dtb
+echo
+echo "Package Kernel"
+echo
 
-rm $RELEASE_DIR_TAR/boot.img
-cp $(pwd)/out/dtb $RELEASE_DIR_ZIP/
-cp $(pwd)/out/Image $RELEASE_DIR_ZIP/
-cp $(pwd)/out/Image $RELEASE_DIR_TAR/
-
-# build anykernel3 release
-
-cd $RELEASE_DIR_ZIP
-zip -r9 DragKernel.zip * -x .git .gitignore
-
-# build tar release
-cd $RELEASE_DIR_TAR
-./cleanup.sh
-cp ../boot.img .
-./unpackimg.sh
-rm -f split_img/boot.img-kernel boot.img
-mv Image split_img/boot.img-kernel
-./repackimg.sh
-mv image-new.img boot.img && tar -cvf boot.img.tar boot.img
-
-
+if [ -f out/arch/arm64/boot/Image ]; then
+    cp -f out/arch/arm64/boot/dtb release/
+    if [ -f out/arch/arm64/boot/Image.gz ]; then
+        cp -f out/arch/arm64/boot/Image.gz release/
+    else
+        cp -f out/arch/arm64/boot/Image release/
+    fi
+    find out -type f -name "*.ko" -exec cp -Rf "{}" release/modules/system/vendor/lib/modules/ \;
+    
+    HASH=$(git rev-parse --short HEAD)
+    
+    cd release
+    zip -r9 "dragkernel-gts7xl-$HASH.zip" * -x *.DS_Store .git* README.md
+    cd ../
+fi
 
