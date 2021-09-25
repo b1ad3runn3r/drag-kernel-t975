@@ -590,3 +590,7 @@ int wacom_check_ub(struct i2c_client *client);
 
 void wacom_swap_compensation(struct wacom_i2c *wac_i2c, char cmd);
 int wacom_ble_charge_mode(struct wacom_i2c *wac_i2c, int mode);
+
+#ifdef CONFIG_TOUCHSCREEN_FTS1BA90A
+extern bool fts_epen_mode;
+#endif

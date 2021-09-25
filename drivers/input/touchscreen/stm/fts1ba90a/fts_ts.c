@@ -25,6 +25,9 @@
 
 struct fts_ts_info *g_fts_info;
 
+bool fts_epen_mode = false;
+EXPORT_SYMBOL(fts_epen_mode);
+
 #ifdef USE_OPEN_CLOSE
 static int fts_input_open(struct input_dev *dev);
 static void fts_input_close(struct input_dev *dev);
@@ -1744,6 +1747,9 @@ static const char finger_mode[10] = {'N', '1', '2', 'G', '4', 'P'};
 
 static u8 fts_event_handler_type_b(struct fts_ts_info *info)
 {
+	if (fts_epen_mode)
+		return 0;
+
 	u8 regAdd;
 	int left_event_count = 0;
 	int EventNum = 0;
