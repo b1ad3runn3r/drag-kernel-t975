@@ -474,6 +474,7 @@ static void qseecom_handle_listener_exit(struct work_struct *unused)
 		pr_warn("exit %d state\n", state);
 		return;
 	}
+	atomic_set(&qseecom.qseecom_state, QSEECOM_STATE_NOT_READY);
 
 	mutex_lock(&listener_access_lock);
 	list_for_each_entry(ptr_svc, &qseecom.registered_listener_list_head, list) {
@@ -492,6 +493,7 @@ static DECLARE_DELAYED_WORK(listener_exit_work, qseecom_handle_listener_exit);
 static int qseecom_reboot_notifier(struct notifier_block *nb,
 				unsigned long code, void *data)
 {
+	cancel_delayed_work_sync(&listener_exit_work);
 	schedule_delayed_work(&listener_exit_work, 3 * HZ);
 	pr_warn("mark listener exit after timeout\n");
 
@@ -501,6 +503,19 @@ static int qseecom_reboot_notifier(struct notifier_block *nb,
 static struct notifier_block qseecom_reboot_nb = {
 	.notifier_call = qseecom_reboot_notifier,
 };
+
+static ssize_t qseecom_sysfs_shutdown(struct kobject *kobj,
+				 struct kobj_attribute *attr,
+				 const char *buf, size_t count)
+{
+	schedule_delayed_work(&listener_exit_work, 30 * HZ);
+	pr_warn("mark listener exit after timeout\n");
+
+	return count;
+}
+
+static struct kobj_attribute qseecom_sysfs_attribute =
+	__ATTR(shutdown, 0660, NULL, qseecom_sysfs_shutdown);
 #endif
 
 #ifdef CONFIG_QSEECOM_DEBUG
@@ -9725,6 +9740,10 @@ static int qseecom_probe(struct platform_device *pdev)
 {
 	int rc;
 
+#ifdef CONFIG_HANDLE_LISTENER_EXIT
+	struct kobject *qseecom_kobj;
+#endif
+
 	rc = qseecom_init_dev(pdev);
 	if (rc)
 		return rc;
@@ -9765,6 +9784,15 @@ static int qseecom_probe(struct platform_device *pdev)
 	rc = register_reboot_notifier(&qseecom_reboot_nb);
 	if (rc)
 		pr_err("failed to register reboot notifier(%d)\n", rc);
+
+	qseecom_kobj = kobject_create_and_add("shutdown_qseecom", kernel_kobj);
+	if (!qseecom_kobj) {
+		pr_err("Unable to create kernel object");
+	} else {
+		rc = sysfs_create_file(qseecom_kobj, &qseecom_sysfs_attribute.attr);
+		if (rc)
+			pr_err("Unable to create qseecom sysfs file");
+	}
 #endif
 
 	atomic_set(&qseecom.qseecom_state, QSEECOM_STATE_READY);
