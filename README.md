@@ -7,7 +7,7 @@ Special thanx to:
 * https://github.com/engstk,
 * https://github.com/Jimbo77,
 * https://github.com/flar2 for their patches
-* https://github.com/osm0sis for his AnyKernel3 and Android Image Kitchen
+* https://github.com/osm0sis for his AnyKernel3
 * https://github.com/andip71 for Boeffla WL Blocker
 * https://github.com/tanish2k09 for K-Lapse livedisplay module
 
@@ -54,14 +54,14 @@ Install necessary packages as shown below
 ```
 sudo pacman -Syy
 sudo pacman -S base-devel git perl openssl ccache
-git clone https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
+git clone --recurse-submodules https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
 chmod +x bk.sh && ./bk.sh
 ```
 ### Ubuntu
 ```
 sudo apt update
 sudo apt install build-essential flex bison libncurses5-dev libssl-dev git ccache
-git clone https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
+git clone --recurse-submodules https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
 chmod +x bk.sh && ./bk.sh
 ```
 ## Post-building
@@ -77,5 +77,5 @@ If your make task fails with "Permission denied", etc. and the failed file is a 
 - [X] Custom I/O schedulers
 - [X] Performance and battery patches
 - [ ] Experimental NTFS R/W support
-- [ ] VR I/O scheduler
+- [X] VR I/O scheduler # won't be ported because it was last used on 3.xx kernel tree and only succesful in benchmarks
 - [ ] Support for T970
