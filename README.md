@@ -7,7 +7,7 @@ Special thanx to:
 * https://github.com/engstk,
 * https://github.com/Jimbo77,
 * https://github.com/flar2 for their patches
-* https://github.com/osm0sis for his AnyKernel3 and Android Image Kitchen
+* https://github.com/osm0sis for his AnyKernel3
 * https://github.com/andip71 for Boeffla WL Blocker
 * https://github.com/tanish2k09 for K-Lapse livedisplay module
 * https://github.com/kdrag0n for proton-clang
