@@ -1,0 +1,3 @@
+[submodule "release"]
+	path = release
+	url = https://github.com/b1ad3runn3r/AnyKernel3
