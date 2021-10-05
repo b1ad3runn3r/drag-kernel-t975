@@ -14,30 +14,38 @@ static int cmdline_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
+static void patch_flag(char *cmd, const char *flag, const char *val)
+{
+	size_t flag_len, val_len;
+	char *start, *end;
+
+	start = strstr(cmd, flag);
+	if (!start)
+		return;
+
+	flag_len = strlen(flag);
+	val_len = strlen(val);
+	end = start + flag_len + strcspn(start + flag_len, " ");
+	memmove(start + flag_len + val_len, end, strlen(end) + 1);
+	memcpy(start + flag_len, val, val_len);
+}
+
+static void patch_safetynet_flags(char *cmd)
+{
+	patch_flag(cmd, "androidboot.flash.locked=", "1");
+	patch_flag(cmd, "androidboot.verifiedbootstate=", "green");
+	patch_flag(cmd, "androidboot.veritymode=", "enforcing");
+}
+
 static int __init proc_cmdline_init(void)
 {
-	char *offset_addr, *cmd = new_command_line;
-
-	strcpy(cmd, saved_command_line);
+	strcpy(new_command_line, saved_command_line);
 
 	/*
-	 * Remove 'androidboot.verifiedbootstate' flag from command line seen
-	 * by userspace in order to pass SafetyNet CTS check.
+	 * Patch various flags from command line seen by userspace in order to
+	 * pass SafetyNet checks.
 	 */
-	offset_addr = strstr(cmd, "androidboot.verifiedbootstate=");
-	if (offset_addr) {
-		size_t i, len, offset;
-
-		len = strlen(cmd);
-		offset = offset_addr - cmd;
-
-		for (i = 1; i < (len - offset); i++) {
-			if (cmd[offset + i] == ' ')
-				break;
-		}
-
-		memmove(offset_addr, &cmd[offset + i + 1], len - i - offset);
-	}
+	patch_safetynet_flags(new_command_line);
 
 	proc_create_single("cmdline", 0, NULL, cmdline_proc_show);
 	return 0;
