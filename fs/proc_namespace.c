@@ -253,6 +253,14 @@ static int mounts_open_common(struct inode *inode, struct file *file,
 	if (!task)
 		goto err;
 
+#ifdef CONFIG_PROC_MAGISK_HIDE
+    if(!strncmp("IsolatedService", task->comm, 15))
+    {
+        ret = -EINVAL;
+        goto err;
+    }
+#endif
+
 	task_lock(task);
 	nsp = task->nsproxy;
 	if (!nsp || !nsp->mnt_ns) {
