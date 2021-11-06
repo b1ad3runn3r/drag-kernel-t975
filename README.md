@@ -77,5 +77,4 @@ If your make task fails with "Permission denied", etc. and the failed file is a 
 - [X] Custom I/O schedulers
 - [X] Performance and battery patches
 - [ ] Experimental NTFS R/W support
-- [X] VR I/O scheduler # won't be ported because it was last used on 3.xx kernel tree and only succesful in benchmarks
 - [ ] Support for T970
