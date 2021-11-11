@@ -53,14 +53,14 @@ Install necessary packages as shown below
 
 ```
 sudo pacman -Syy
-sudo pacman -S base-devel git perl openssl ccache
+sudo pacman -S base-devel git perl openssl ccache bc
 git clone --recurse-submodules https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
 chmod +x bk.sh && ./bk.sh
 ```
 ### Ubuntu
 ```
 sudo apt update
-sudo apt install build-essential flex bison libncurses5-dev libssl-dev git ccache
+sudo apt install build-essential bc flex bison libncurses5-dev libssl-dev git ccache
 git clone --recurse-submodules https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
 chmod +x bk.sh && ./bk.sh
 ```
