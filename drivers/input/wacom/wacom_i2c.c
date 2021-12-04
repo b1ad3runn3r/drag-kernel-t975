@@ -1506,10 +1506,6 @@ static void wacom_i2c_coord_handler(struct wacom_i2c *wac_i2c, char *data)
 		wac_i2c->mcount = 0;
 	}
 
-#ifdef CONFIG_TOUCHSCREEN_FTS1BA90A
-	fts_epen_mode = wac_i2c->pen_prox || wac_i2c->pen_pressed;
-#endif
-
 	return;
 }
 
