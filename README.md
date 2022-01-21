@@ -10,6 +10,8 @@ Special thanx to:
 * https://github.com/osm0sis for his AnyKernel3
 * https://github.com/andip71 for Boeffla WL Blocker
 * https://github.com/tanish2k09 for K-Lapse livedisplay module
+* https://github.com/kdrag0n for proton-clang
+* https://github.com/LineageOS for gcc toolchain nested on github
 
 Sorry for not saving authors of original commits in contributors, file in sources vary severely, so I had to check every commit by hand.
 
@@ -36,18 +38,19 @@ This is a stock modified kernel from SM-T975 with bugfixes and new features. And
 * configs tuning
 * and more...
 
-<span style="color:red">**GPU OC attempt failed.** </span>
+**GPU OC attempt failed successful to 683 MHz.**
 
 ## Used sources and toolchains
 Kernel sources - [here](https://opensource.samsung.com/uploadSearch?searchValue=SM-T975)
 
-Linaro GCC (gcc-linaro-4.9.4-2017.01-x86_64_aarch64-linux-gnu.tar.xz) - [here](https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/aarch64-linux-gnu/)
+Used toolchains: 
 
-Clang 10.0.6 by Google - [here](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/refs/heads/android11-dev/clang-r377782d/)
+GCC 4.9 by [@LineageOS](https://github.com/LineageOS) - [here](https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/)
+
+Clang toolchain by [@kdrag0n](https://github.com/kdrag0n) - [here](https://github.com/kdrag0n/proton-clang/)
 
 ## Building
-Download Clang and GCC, place them in a comfortable directory, provide paths for them in bk.sh
-Install necessary packages as shown below
+All toolchain are downloaded automatically, just run build_kernel.sh
 
 ### Arch Linux
 
@@ -55,14 +58,14 @@ Install necessary packages as shown below
 sudo pacman -Syy
 sudo pacman -S base-devel git perl openssl ccache bc
 git clone --recurse-submodules https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
-chmod +x bk.sh && ./bk.sh
+chmod +x build_kernel.sh && ./build_kernel.sh
 ```
 ### Ubuntu
 ```
 sudo apt update
 sudo apt install build-essential bc flex bison libncurses5-dev libssl-dev git ccache
 git clone --recurse-submodules https://github.com/b1ad3runn3r/drag-kernel-t975 && cd drag-kernel-t975
-chmod +x bk.sh && ./bk.sh
+chmod +x build_kernel.sh && ./build_kernel.sh
 ```
 ## Post-building
 If you want to flash kernel with Odin:
@@ -74,9 +77,6 @@ If you want to flash kernel with Odin:
 5) Flash with Odin into AP section(Auto-Reboot option does not matter).
 
 If you want to use AnyKernel3 variant, check its [repo](https://github.com/osm0sis/AnyKernel3)
-
-## Using DTB
-Altered DTB currently not working - system does not boot with the included(both in tar and zip variants).
 
 ## Troubleshooting
 If your make task fails with "Permission denied", etc. and the failed file is a shell-script, use ```chmod +x script.sh```

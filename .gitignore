@@ -168,3 +168,4 @@ scripts/crypto/__pycache__/*.pyc
 security/samsung/defex_lsm/pack_rules
 security/samsung/defex_lsm/defex_packed_rules.inc
 PATCH/
+.wireguard-fetch-lock
