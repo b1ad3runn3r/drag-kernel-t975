@@ -10,3 +10,10 @@ config TOUCHSCREEN_FTS1BA90A
 		If unsure, say N.
 		To compile this driver as a module, choose M here: the
 		module will be called STM_ts.
+
+config AOSP_PALM_REJECTION
+	bool "AOSP palm rejection driver"
+	help
+		Say Y here to enable palm rejection on AOSP.
+		If you are on OneUI, say no.
+		Otherwise, choose N.
