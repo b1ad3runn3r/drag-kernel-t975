@@ -44,7 +44,7 @@ echo
 mkdir -p out
 mkdir -p release/modules/system/vendor/lib/modules
 
-BUILD_CROSS_COMPILE=$(pwd)/toolchain/gcc/bin/aarch64-linux-android
+BUILD_CROSS_COMPILE=$(pwd)/toolchain/gcc/bin/aarch64-linux-android-
 KERNEL_LLVM_BIN=$(pwd)/toolchain/clang/bin/clang
 CLANG_TRIPLE=aarch64-linux-gnu-
 KERNEL_MAKE_ENV="DTC_EXT=$(pwd)/tools/dtc CONFIG_BUILD_ARM64_DT_OVERLAY=y"
