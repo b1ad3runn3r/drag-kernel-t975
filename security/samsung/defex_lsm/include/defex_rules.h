@@ -57,9 +57,6 @@ struct rule_item_struct {
 	char name[0];
 } __attribute__((packed));
 
-extern const struct static_rule defex_static_rules[];
-extern const int static_rule_count;
-
 int check_rules_ready(void);
 
 #endif /* __DEFEX_RULES_H */

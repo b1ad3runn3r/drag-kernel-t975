@@ -1457,6 +1457,10 @@ ssize_t sec_bat_show_attrs(struct device *dev,
 				size = sizeof(temp_buf) - strlen(temp_buf);
 			}
 			mutex_unlock(&pcisd->powerlock);
+
+			/* clear daily power data */
+			init_cisd_power_data(&battery->cisd);
+
 			i += scnprintf(buf + i, PAGE_SIZE - i, "%s\n", temp_buf);
 		}
 		break;
@@ -1983,16 +1987,19 @@ ssize_t sec_bat_store_attrs(
 		break;
 	case BATT_SLATE_MODE:
 		if (sscanf(buf, "%10d\n", &x) == 1) {
-			if (x == is_slate_mode(battery)) {
-				dev_info(battery->dev,
-					 "%s : skip same slate mode : %d\n", __func__, x);
-				return count;
-			} else if (x == 1) {
+			if (x == SB_SLATE_SMART) {
 				sec_bat_set_current_event(battery, SEC_BAT_CURRENT_EVENT_SLATE, SEC_BAT_CURRENT_EVENT_SLATE);
+				battery->slate_mode = x;
+				dev_info(battery->dev,
+					"%s: enable smart switch slate mode : %d\n", __func__, x);
+			} else if (x == SB_SLATE_NORMAL) {
+				sec_bat_set_current_event(battery, SEC_BAT_CURRENT_EVENT_SLATE, SEC_BAT_CURRENT_EVENT_SLATE);
+				battery->slate_mode = x;
 				dev_info(battery->dev,
 					"%s: enable slate mode : %d\n", __func__, x);
-			} else if (x == 0) {
+			} else if (x == SB_SLATE_NONE) {
 				sec_bat_set_current_event(battery, 0, SEC_BAT_CURRENT_EVENT_SLATE);
+				battery->slate_mode = x;
 				dev_info(battery->dev,
 					"%s: disable slate mode : %d\n", __func__, x);
 			} else {

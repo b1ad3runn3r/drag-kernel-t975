@@ -224,9 +224,6 @@ static int max77705_fg_read_vfocv(struct max77705_fuelgauge_data *fuelgauge)
 	temp2 = temp / 1000000;
 	vfocv += (temp2 << 4);
 
-#if !defined(CONFIG_SEC_FACTORY)
-	max77705_fg_periodic_read(fuelgauge);
-#endif
 	max77705_fg_periodic_read_power(fuelgauge);
 
 	return vfocv;
@@ -1267,14 +1264,15 @@ bool max77705_fg_init(struct max77705_fuelgauge_data *fuelgauge)
 #endif
 
 	fuelgauge->info.fullcap_check_interval = ts.tv_sec;
-
 	fuelgauge->info.is_first_check = true;
 
-	/* Init parameters to prevent wrong compensation. */
-	fuelgauge->info.previous_fullcap =
-	    max77705_read_word(fuelgauge->i2c, FULLCAP_REG);
-	fuelgauge->info.previous_vffullcap =
-	    max77705_read_word(fuelgauge->i2c, FULLCAP_NOM_REG);
+	if (max77705_bulk_read(fuelgauge->i2c, CONFIG2_REG, 2, data) < 0) {
+		pr_err("%s: Failed to read CONFIG2_REG\n", __func__);
+	} else if ((data[0] & 0x0F) != 0x05) {
+		data[0] &= ~0x2F;
+		data[0] |= (0x5 & 0xF); /* ISysNCurr: 11.25 */
+		max77705_bulk_write(fuelgauge->i2c, CONFIG2_REG, 2, data);
+	}
 
 	if (fuelgauge->pdata->jig_gpio) {
 		int ret;
@@ -2107,9 +2105,6 @@ static int max77705_fg_get_property(struct power_supply *psy,
 				(fuelgauge->battery_data->Capacity * fuelgauge->fg_resistor / 2);
 			pr_info("%s: asoc(%d), fullcap(%d)\n", __func__,
 				val->intval, fullcap);
-#if !defined(CONFIG_SEC_FACTORY)
-			max77705_fg_periodic_read(fuelgauge);
-#endif
 		}
 		break;
 	case POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN:
@@ -2217,6 +2212,11 @@ static int max77705_fg_get_property(struct power_supply *psy,
 
 				val->intval = ocv / 6;
 			}
+			break;
+		case POWER_SUPPLY_EXT_PROP_INFO:
+#if !defined(CONFIG_SEC_FACTORY)
+			max77705_fg_periodic_read(fuelgauge);
+#endif
 			break;
 		default:
 			return -EINVAL;
@@ -2374,6 +2374,8 @@ static int max77705_fg_set_property(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_MAX ... POWER_SUPPLY_EXT_PROP_MAX:
 		switch (ext_psp) {
+		case POWER_SUPPLY_EXT_PROP_INFO:
+			break;
 		default:
 			return -EINVAL;
 		}

@@ -398,15 +398,6 @@
 			reg = <0x0 0x80900000 0x0 0x200000>;
 		};
 
-		ramoops: ramoops@80880000 {
-			compatible = "removed-dma-pool", "ramoops";
-			reg = <0 0x80880000 0 0x00080000>;
-			record-size = <0x10000>;
-			console-size = <0x60000>;
-			pmsg-size = <0x10000>;
-			no-map;
-		};
-
 		removed_mem: removed_region@80b00000 {
 			no-map;
 			reg = <0x0 0x80b00000 0x0 0x5300000>;

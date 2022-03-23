@@ -6,14 +6,7 @@
  * as published by the Free Software Foundation.
  */
 
-#include "include/defex_rules.h"
-
-const struct static_rule defex_static_rules[] = {
-	{feature_ped_path,"/"},
-	{feature_safeplace_status,"1"},
-	{feature_immutable_status,"1"},
-	{feature_ped_status,"1"},
-#ifndef DEFEX_USE_PACKED_RULES
+#if 0
 	{feature_ped_exception,"/system/bin/run-as"},	/* DEFAULT */
 	{feature_ped_exception,"/system/bin/dumpstate"},	/* DEFAULT */
 	{feature_safeplace_path,"/init"},
@@ -195,6 +188,7 @@ const struct static_rule defex_static_rules[] = {
 	{feature_safeplace_path,"/system/bin/showmap"},
 	{feature_safeplace_path,"/product/bin/dmabuf_dump"},
 	{feature_safeplace_path,"/apex/com.android.runtime/bin/spqr"},
+	{feature_safeplace_path,"/system/bin/perfetto"},
 	{feature_safeplace_path,"/tmp/update_binary"},
 	{feature_safeplace_path,"/tmp/update-binary"},
 	{feature_safeplace_path,"/system/bin/install-recovery.sh"},	/* DEFAULT */
@@ -222,7 +216,4 @@ const struct static_rule defex_static_rules[] = {
 	{feature_immutable_src_exception,"/system/bin/init"},
 	/* Rules will be added here */
 	/* Never modify the above line. Rules will be added for buildtime */
-#endif /* DEFEX_USE_PACKED_RULES */
-};
-
-const int static_rule_count = sizeof(defex_static_rules) / sizeof(defex_static_rules[0]);
+#endif /* if 0 */

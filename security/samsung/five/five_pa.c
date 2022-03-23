@@ -26,24 +26,40 @@
 #include "five_lv.h"
 #include "five_porting.h"
 
+#ifdef CONFIG_FIVE_GKI_10
+#define F_SIGNATURE(file) ((void *)((file)->android_vendor_data1))
+
+static inline void f_signature_assign(struct file *file, void *f_signature)
+{
+	file->android_vendor_data1 = (u64)f_signature;
+}
+#else
+#define F_SIGNATURE(file) ((file)->f_signature)
+
+static inline void f_signature_assign(struct file *file, void *f_signature)
+{
+	file->f_signature = f_signature;
+}
+#endif
+
 static void process_file(struct task_struct *task, struct file *file)
 {
 	char *xattr_value = NULL;
 
-	if (file->f_signature)
+	if (F_SIGNATURE(file))
 		return;
 
 	if (five_check_params(task, file))
 		return;
 
 	five_read_xattr(d_real_comp(file->f_path.dentry), &xattr_value);
-	file->f_signature = xattr_value;
+	f_signature_assign(file, xattr_value);
 }
 
 void fivepa_fsignature_free(struct file *file)
 {
-	kfree(file->f_signature);
-	file->f_signature = NULL;
+	kfree(F_SIGNATURE(file));
+	f_signature_assign(file, NULL);
 }
 
 int proca_fcntl_setxattr(struct file *file, void __user *lv_xattr)
@@ -80,7 +96,7 @@ int proca_fcntl_setxattr(struct file *file, void __user *lv_xattr)
 
 	inode_lock(inode);
 
-	if (task_integrity_allow_sign(current->integrity)) {
+	if (task_integrity_allow_sign(TASK_INTEGRITY(current))) {
 		rc = __vfs_setxattr_noperm(d_real_comp(file->f_path.dentry),
 						XATTR_NAME_PA,
 						x,

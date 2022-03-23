@@ -22,9 +22,7 @@
 #include <kunit/mock.h>
 #endif
 
-#define SIGN_SIZE		256
 #define SHA256_DIGEST_SIZE	32
-#define MAX_DATA_LEN		300
 
 extern char defex_public_key_start[];
 extern char defex_public_key_end[];
@@ -143,46 +141,6 @@ __visible_for_testing int __init defex_public_key_verify_signature(unsigned char
 	return ret;
 }
 #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 7, 0) */
-
-#ifdef DEFEX_DEBUG_ENABLE
-void __init blob(const char *buffer, const size_t bufLen, const int lineSize)
-{
-	size_t i = 0, line;
-	size_t j = 0, len = bufLen;
-	int offset = 0;
-	char c, stringToPrint[MAX_DATA_LEN];
-
-	do {
-		line = (len > lineSize)?lineSize:len;
-		offset  = 0;
-		offset += snprintf(stringToPrint + offset, MAX_DATA_LEN - offset, "| 0x%0*zx | ", PR_HEX(i));
-
-		for(j = 0; j < line; j++)
-			offset += snprintf(stringToPrint + offset, MAX_DATA_LEN - offset, "%02X ", (unsigned char)buffer[i + j]);
-		if (line < lineSize) {
-			for(j = 0; j < lineSize - line; j++)
-				offset += snprintf(stringToPrint + offset, MAX_DATA_LEN - offset, "   ");
-		}
-		offset += snprintf(stringToPrint + offset, MAX_DATA_LEN - offset, "| ");
-
-		for(j = 0; j < line; j++) {
-			c = buffer[i + j];
-			c = (c < 0x20)||(c >= 0x7F)?'.':c;
-			offset += snprintf(stringToPrint + offset, MAX_DATA_LEN - offset, "%c", c);
-		}
-		if (line < lineSize) {
-			for(j = 0; j < lineSize - line; j++)
-				offset += snprintf(stringToPrint + offset, MAX_DATA_LEN - offset, " ");
-		}
-
-		offset += snprintf(stringToPrint + offset, MAX_DATA_LEN - offset, " |");
-		printk(KERN_INFO "%s\n", stringToPrint);
-		memset(stringToPrint, 0, MAX_DATA_LEN);
-		i += line;
-		len -= line;
-	} while(len);
-}
-#endif
 
 int __init defex_calc_hash(const char *data, unsigned int size, unsigned char *hash)
 {

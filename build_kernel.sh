@@ -76,4 +76,3 @@ if [ -f out/arch/arm64/boot/Image ]; then
     zip -r9 "dragkernel-gts7xl-$HASH.zip" * -x *.DS_Store .git* README.md *placeholder LICENSE
     cd ../
 fi
-

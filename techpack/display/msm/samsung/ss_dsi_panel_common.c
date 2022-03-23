@@ -2496,6 +2496,11 @@ int ss_panel_on_pre(struct samsung_display_driver_data *vdd)
 		vdd->read_panel_status_from_lk = 1;
 	}
 
+	if (vdd->skip_read_on_pre) {
+		LCD_INFO("Skip read operation in on_pre\n");
+		goto skip_read;
+	}
+
 	/* Module info */
 	if (!vdd->module_info_loaded_dsi) {
 		if (IS_ERR_OR_NULL(vdd->panel_func.samsung_module_info_read))
@@ -2680,6 +2685,7 @@ int ss_panel_on_pre(struct samsung_display_driver_data *vdd)
 		}
 	}
 
+skip_read:
 	if (!IS_ERR_OR_NULL(vdd->panel_func.samsung_panel_on_pre))
 		vdd->panel_func.samsung_panel_on_pre(vdd);
 
@@ -3715,10 +3721,20 @@ static void ss_panel_parse_dt_bright_tables(struct device_node *np,
 				"samsung,candela_map_table_rev", panel_rev,
 				ss_parse_candella_mapping_table);
 
+#if (defined(CONFIG_MACH_X1Q_JPN_SINGLE) || \
+		(defined(CONFIG_MACH_Y2Q_JPN_SINGLE) && !defined(CONFIG_MACH_Y2Q_JPN_DCMOLY)) || \
+		defined(CONFIG_MACH_BLOOMXQ_JPN_SINGLE))
+		LCD_INFO("parse jpn AOD brightness table\n");
+		parse_dt_data(np, &info->candela_map_table[AOD][panel_rev],
+				sizeof(struct candela_map_table),
+				"samsung,aod_candela_map_table_jpn_rev", panel_rev,
+				ss_parse_candella_mapping_table);
+#else
 		parse_dt_data(np, &info->candela_map_table[AOD][panel_rev],
 				sizeof(struct candela_map_table),
 				"samsung,aod_candela_map_table_rev", panel_rev,
 				ss_parse_candella_mapping_table);
+#endif
 
 		parse_dt_data(np, &info->candela_map_table[HBM][panel_rev],
 				sizeof(struct candela_map_table),
@@ -4303,6 +4319,9 @@ static void ss_panel_parse_dt(struct samsung_display_driver_data *vdd)
 
 	vdd->dtsi_data.panel_lpm_enable = of_property_read_bool(np, "samsung,panel-lpm-enable");
 	LCD_ERR("alpm enable %s\n", vdd->dtsi_data.panel_lpm_enable ? "enabled" : "disabled");
+
+	vdd->skip_read_on_pre = of_property_read_bool(np, "samsung,skip_read_on_pre");
+	LCD_ERR("Skip read on pre %s\n", vdd->skip_read_on_pre ? "enabled" : "disabled");
 
 	/* Set HALL IC */
 	vdd->support_hall_ic  = of_property_read_bool(np, "samsung,mdss_dsi_hall_ic_enable");
@@ -7856,6 +7875,14 @@ int ss_early_display_init(struct samsung_display_driver_data *vdd)
 				LCD_ERR("no samsung_module_info_read function\n");
 			else
 				vdd->module_info_loaded_dsi = vdd->panel_func.samsung_module_info_read(vdd);
+		}
+
+		/* MDNIE X,Y */
+		if (!vdd->mdnie_loaded_dsi) {
+			if (IS_ERR_OR_NULL(vdd->panel_func.samsung_mdnie_read))
+				LCD_ERR("no samsung_mdnie_read function\n");
+			else
+				vdd->mdnie_loaded_dsi = vdd->panel_func.samsung_mdnie_read(vdd);
 		}
 
 		/* Panel Unique Cell ID */

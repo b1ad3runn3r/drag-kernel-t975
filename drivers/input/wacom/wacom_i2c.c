@@ -1104,13 +1104,11 @@ static void wacom_i2c_cover_handler(struct wacom_i2c *wac_i2c, char *data)
 
 	change_status = (data[3] >> 7) & 0x01;
 
-	if (wac_i2c->flip_state != change_status) {
-		input_info(true, &wac_i2c->client->dev, "%s: cover status %d\n", __func__, change_status);
-		input_report_switch(wac_i2c->input_dev,
-			SW_FLIP, change_status);
-		input_sync(wac_i2c->input_dev);
-		wac_i2c->flip_state = change_status;
-	}
+	input_info(true, &wac_i2c->client->dev, "%s: cover status %d\n", __func__, change_status);
+	input_report_switch(wac_i2c->input_dev,
+		SW_FLIP, change_status);
+	input_sync(wac_i2c->input_dev);
+	wac_i2c->flip_state = change_status;
 }
 
 static void wacom_i2c_noti_handler(struct wacom_i2c *wac_i2c, char *data)
@@ -1667,9 +1665,10 @@ static void pen_insert_work(struct work_struct *work)
 {
 	struct wacom_i2c *wac_i2c =
 		container_of(work, struct wacom_i2c, pen_insert_dwork.work);
+	char data;
+	int ret = 0;
 
 #if !WACOM_SEC_FACTORY
-	int ret = 0;
 
 	if (wac_i2c->pdata->support_garage_open_test) {
 		ret = wacom_open_test(wac_i2c, WACOM_GARAGE_TEST);
@@ -1709,6 +1708,15 @@ static void pen_insert_work(struct work_struct *work)
 
 	input_info(true, &wac_i2c->client->dev, "%s : pen is %s\n", __func__,
 			(wac_i2c->function_result & EPEN_EVENT_PEN_OUT) ? "OUT" : "IN");
+
+	/* occur cover status event*/
+	if (wac_i2c->pdata->support_cover_detection) {
+		data = COM_KBDCOVER_CHECK_STATUS;
+		ret = wacom_i2c_send(wac_i2c, &data, 1);
+		if (ret < 0) {
+			input_err(true, &wac_i2c->client->dev, "%s: failed to send cover status event %d\n", __func__, ret);
+		}
+	}
 }
 
 static void init_pen_insert(struct wacom_i2c *wac_i2c)

@@ -72,6 +72,7 @@ enum power_supply_ext_property {
 	POWER_SUPPLY_EXT_PROP_WIRELESS_INITIAL_WC_CHECK,
 	POWER_SUPPLY_EXT_PROP_WIRELESS_PARAM_INFO,
 	POWER_SUPPLY_EXT_PROP_WIRELESS_CHECK_FW_VER,
+	POWER_SUPPLY_EXT_PROP_WIRELESS_SGF,
 	POWER_SUPPLY_EXT_PROP_AICL_CURRENT,
 	POWER_SUPPLY_EXT_PROP_CHECK_MULTI_CHARGE,
 	POWER_SUPPLY_EXT_PROP_CHIP_ID,
@@ -158,6 +159,7 @@ enum power_supply_ext_property {
 	POWER_SUPPLY_EXT_PROP_WPC_EN,
 	POWER_SUPPLY_EXT_PROP_WPC_EN_MST,
 	POWER_SUPPLY_EXT_PROP_INBAT_VOLTAGE,
+	POWER_SUPPLY_EXT_PROP_INFO,
 };
 
 enum rx_device_type {
@@ -1295,6 +1297,7 @@ struct sec_battery_platform_data {
 	int siop_apdo_input_limit_current;
 	int siop_apdo_charging_limit_current;
 #endif
+	int input_current_by_siop_20;
 
 	int siop_wireless_input_limit_current;
 	int siop_wireless_charging_limit_current;
@@ -1347,11 +1350,16 @@ struct sec_battery_platform_data {
 #endif
 
 #if defined(CONFIG_DUAL_BATTERY)
-	/* main + sub value should be over 110% */
-	unsigned int main_charging_rate;
-	unsigned int sub_charging_rate;
-	unsigned int dc_main_charging_rate;
-	unsigned int dc_sub_charging_rate;
+	/* zone 1 : 0C ~ 0.4C */
+	unsigned int main_zone1_current_rate;
+	unsigned int sub_zone1_current_rate;
+	/* zone 2 : 0.4C ~ 1.1C */
+	unsigned int main_zone2_current_rate;
+	unsigned int sub_zone2_current_rate;
+	/* zone 3 : 1.1C ~ MAX */
+	unsigned int main_zone3_current_rate;
+	unsigned int sub_zone3_current_rate;
+
 	unsigned int force_recharge_margin;
 	unsigned int max_main_charging_current;
 	unsigned int min_main_charging_current;

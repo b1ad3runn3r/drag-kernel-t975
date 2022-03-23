@@ -251,6 +251,12 @@ struct adc_sample_info {
 	int index;
 };
 
+enum slate_mode_info {
+	SB_SLATE_NONE = 0,
+	SB_SLATE_NORMAL,
+	SB_SLATE_SMART,
+};
+
 #if defined(CONFIG_BATTERY_SAMSUNG_MHS)
 struct cable_info {
 	int cable_type;
@@ -555,6 +561,7 @@ struct sec_battery_info {
 	int wpc_vout_level;
 	int wpc_max_vout_level;
 	unsigned int current_event;
+	bool refresh_current;
 
 	/* wireless charging enable */
 	struct mutex wclock;
@@ -676,9 +683,11 @@ struct sec_battery_info {
 	unsigned int tx_ocp_cnt;
 	struct delayed_work ext_event_work;
 	struct delayed_work misc_event_work;
+	struct delayed_work wpc_tx_en_work;
 	struct wakeup_source *ext_event_wake_lock;
 	struct wakeup_source *misc_event_wake_lock;
 	struct wakeup_source *tx_event_wake_lock;
+	struct wakeup_source *wpc_tx_en_wake_lock;
 	struct mutex batt_handlelock;
 	struct mutex current_eventlock;
 	struct mutex typec_notylock;
@@ -706,6 +715,7 @@ struct sec_battery_info {
 	int raw_bat_temp;
 
 	bool support_unknown_wpcthm;
+	unsigned int slate_mode;
 };
 
 /* event check */
@@ -770,6 +780,7 @@ extern void sec_bat_set_temp_control_test(struct sec_battery_info *battery, bool
 extern void sec_bat_get_battery_info(struct sec_battery_info *battery);
 extern int sec_bat_set_charge(struct sec_battery_info *battery, int chg_mode);
 extern int sec_bat_set_charging_current(struct sec_battery_info *battery);
+extern void sec_bat_refresh_charging_current(struct sec_battery_info *battery);
 extern void sec_bat_aging_check(struct sec_battery_info *battery);
 extern void sec_wireless_set_tx_enable(struct sec_battery_info *battery, bool wc_tx_enable);
 

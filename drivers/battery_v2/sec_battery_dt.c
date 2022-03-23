@@ -1485,6 +1485,12 @@ int sec_bat_parse_dt(struct device *dev,
 		pdata->swelling_low_rechg_thr = 150;
 	}
 
+	ret = of_property_read_u32(np, "battery,input_current_by_siop_20",
+			(unsigned int *)&pdata->input_current_by_siop_20);
+	if (ret) {
+		pr_info("%s: input_current_by_siop_20 is Empty. Not used\n", __func__);
+	}
+
 	pr_info("%s : SWELLING_HIGH_TEMP(%d) SWELLING_HIGH_TEMP_RECOVERY(%d)\n"
 		"SWELLING_LOW_TEMP_1st(%d) SWELLING_LOW_TEMP_RECOVERY_1st(%d) "
 		"SWELLING_LOW_TEMP_2nd(%d) SWELLING_LOW_TEMP_RECOVERY_2nd(%d) "
@@ -1914,30 +1920,47 @@ int sec_bat_parse_dt(struct device *dev,
 		if (ret < 0) {
 			pr_info("%s : can't get sub_bat_enb_gpio\n", __func__);
 		}
-		ret = of_property_read_u32(np, "battery,main_charging_rate",
-				&pdata->main_charging_rate);
+
+		/* zone1 current ratio, 0C ~ 0.4C */
+		ret = of_property_read_u32(np, "battery,main_zone1_current_rate",
+				&pdata->main_zone1_current_rate);
 		if (ret) {
-			pr_err("%s: main_charging_rate is Empty\n", __func__);
-			pdata->main_charging_rate = 60;
+			pr_err("%s: main_zone1_current_rate is Empty\n", __func__);
+			pdata->main_zone1_current_rate = 50;
 		}
-		ret = of_property_read_u32(np, "battery,sub_charging_rate",
-				&pdata->sub_charging_rate);
+		ret = of_property_read_u32(np, "battery,sub_zone1_current_rate",
+				&pdata->sub_zone1_current_rate);
 		if (ret) {
-			pr_err("%s: sub_charging_rate is Empty\n", __func__);
-			pdata->sub_charging_rate = 50;
+			pr_err("%s: sub_zone1_current_rate is Empty\n", __func__);
+			pdata->sub_zone1_current_rate = 60;
 		}
-		ret = of_property_read_u32(np, "battery,dc_main_charging_rate",
-				&pdata->dc_main_charging_rate);
+		/* zone2 current ratio, 0.4C ~ 1.1C */
+		ret = of_property_read_u32(np, "battery,main_zone2_current_rate",
+				&pdata->main_zone2_current_rate);
 		if (ret) {
-			pr_err("%s: dc_main_charging_rate is Empty\n", __func__);
-			pdata->dc_main_charging_rate = pdata->main_charging_rate;
+			pr_err("%s: main_zone2_current_rate is Empty\n", __func__);
+			pdata->main_zone2_current_rate = 50;
 		}
-		ret = of_property_read_u32(np, "battery,dc_sub_charging_rate",
-				&pdata->dc_sub_charging_rate);
+		ret = of_property_read_u32(np, "battery,sub_zone2_current_rate",
+				&pdata->sub_zone2_current_rate);
 		if (ret) {
-			pr_err("%s: dc_sub_charging_rate is Empty\n", __func__);
-			pdata->dc_sub_charging_rate = pdata->sub_charging_rate;
+			pr_err("%s: sub_zone2_current_rate is Empty\n", __func__);
+			pdata->sub_zone2_current_rate = 60;
 		}
+		/* zone3 current ratio, 1.1C ~ MAX */
+		ret = of_property_read_u32(np, "battery,main_zone3_current_rate",
+				&pdata->main_zone3_current_rate);
+		if (ret) {
+			pr_err("%s: main_zone3_current_rate is Empty\n", __func__);
+			pdata->main_zone3_current_rate = pdata->main_zone2_current_rate;
+		}
+		ret = of_property_read_u32(np, "battery,sub_zone3_current_rate",
+				&pdata->sub_zone3_current_rate);
+		if (ret) {
+			pr_err("%s: sub_zone3_current_rate is Empty\n", __func__);
+			pdata->sub_zone3_current_rate = pdata->sub_zone2_current_rate;
+		}
+
 		ret = of_property_read_u32(np, "battery,force_recharge_margin",
 				&pdata->force_recharge_margin);
 		if (ret) {
@@ -1968,10 +1991,10 @@ int sec_bat_parse_dt(struct device *dev,
 			pr_err("%s: min_sub_charging_current is Empty\n", __func__);
 			pdata->min_sub_charging_current = 450;
 		}
-		pr_info("%s : main rate:%d(dc %d), sub rate:%d(dc %d), recharge marging:%d, "
+		pr_info("%s : main ratio:%d(zn1) %d(zn2) %d(zn3), sub ratio:%d(zn1) %d(zn2) %d(zn3), recharge marging:%d, "
 				"max main curr:%d, min main curr:%d, max sub curr:%d, min sub curr:%d \n",
-				__func__, pdata->main_charging_rate, pdata->dc_main_charging_rate,
-				pdata->sub_charging_rate, pdata->dc_sub_charging_rate,
+				__func__, pdata->main_zone1_current_rate, pdata->main_zone2_current_rate, pdata->main_zone3_current_rate,
+				pdata->sub_zone1_current_rate, pdata->sub_zone2_current_rate, pdata->sub_zone3_current_rate,
 				pdata->force_recharge_margin, pdata->max_main_charging_current, pdata->min_main_charging_current,
 				pdata->max_sub_charging_current, pdata->min_sub_charging_current);
 	}

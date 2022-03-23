@@ -26,15 +26,14 @@ RAMDISK_ENABLE=true
 # do signing for rules
 SIGN_ENABLE=true
 
-obj-y := core/defex_common.o
-obj-y += core/defex_lsm.o
-obj-y += core/defex_main.o
-obj-y += core/defex_get_mode.o
-obj-y += core/defex_sysfs.o
-obj-y += catch_engine/defex_catch_list.o
-obj-y += catch_engine/defex_ht.o
-obj-y += defex_rules.o
-obj-$(CONFIG_COMPAT) += catch_engine/defex_catch_list_compat.o
+defex-y := core/defex_common.o
+defex-y += core/defex_lsm.o
+defex-y += core/defex_main.o
+defex-y += core/defex_get_mode.o
+defex-y += core/defex_rules_proc.o
+defex-y += catch_engine/defex_catch_list.o
+defex-y += catch_engine/defex_ht.o
+defex-$(CONFIG_COMPAT) += catch_engine/defex_catch_list_compat.o
 
 # Immutable Feature is applied with permissive mode first.
 DEFEX_DEFINES := -DDEFEX_PERMISSIVE_IM
@@ -45,6 +44,8 @@ ifeq ($(CONFIG_DEFEX_KERNEL_ONLY), y)
         $(warning [DEFEX] Kernel_only & Ship)
     else
         $(warning [DEFEX] Kernel_only & Noship)
+        defex-y += debug/defex_debug.o
+        defex-y += core/defex_sysfs.o
         DEFEX_DEFINES += -DDEFEX_PERMISSIVE_SP
         DEFEX_DEFINES += -DDEFEX_PERMISSIVE_IM
         DEFEX_DEFINES += -DDEFEX_PERMISSIVE_LP
@@ -56,19 +57,13 @@ ifeq ($(CONFIG_SEC_FACTORY), y)
     DEFEX_DEFINES += -DDEFEX_FACTORY_ENABLE
 endif
 
-ifeq ($(CONFIG_KUNIT), y)
-    DEFEX_DEFINES += -DDEFEX_KUNIT_ENABLED
-else
-    DEFEX_DEFINES += -D__visible_for_testing=static
-endif
-
 ifeq ($(PED_ENABLE), true)
-    obj-y += feature_privilege_escalation_detection/defex_priv.o
+    defex-y += feature_privilege_escalation_detection/defex_priv.o
     DEFEX_DEFINES += -DDEFEX_PED_ENABLE
 endif
 
 ifeq ($(SAFEPLACE_ENABLE), true)
-    obj-y += feature_safeplace/defex_safeplace.o
+    defex-y += feature_safeplace/defex_safeplace.o
     DEFEX_DEFINES += -DDEFEX_SAFEPLACE_ENABLE
 endif
 
@@ -77,7 +72,7 @@ ifeq ($(INTEGRITY_ENABLE), true)
 endif
 
 ifeq ($(IMMUTABLE_ENABLE), true)
-    obj-y += feature_immutable/defex_immutable.o
+    defex-y += feature_immutable/defex_immutable.o
     DEFEX_DEFINES += -DDEFEX_IMMUTABLE_ENABLE
 endif
 
@@ -90,7 +85,7 @@ ifeq ($(UMH_RESTRICTION_ENABLE), true)
 endif
 
 ifeq ($(CACHES_ENABLE), true)
-    obj-y += catch_engine/defex_caches.o
+    defex-y += catch_engine/defex_caches.o
     DEFEX_DEFINES += -DDEFEX_CACHES_ENABLE
 endif
 
@@ -101,23 +96,31 @@ endif
 ifeq ($(RAMDISK_ENABLE), true)
     DEFEX_DEFINES += -DDEFEX_RAMDISK_ENABLE
 ifeq ($(SIGN_ENABLE), true)
-    obj-y += cert/defex_cert.o
-    obj-y += cert/defex_sign.o
+    defex-y += cert/defex_cert.o
+    defex-y += cert/defex_sign.o
     DEFEX_DEFINES += -DDEFEX_SIGN_ENABLE
 endif
 endif
 
 ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
-    obj-y += debug/defex_debug.o
+    defex-y += debug/defex_debug.o
+    defex-y += core/defex_sysfs.o
     DEFEX_DEFINES += -DDEFEX_PERMISSIVE_SP
     DEFEX_DEFINES += -DDEFEX_PERMISSIVE_IM
     DEFEX_DEFINES += -DDEFEX_PERMISSIVE_LP
     DEFEX_DEFINES += -DDEFEX_DEBUG_ENABLE
-    DEFEX_DEFINES += -DDEFEX_SYSFS_ENABLE
 else
     ifeq ($(CONFIG_SECURITY_DSMS), y)
         DEFEX_DEFINES += -DDEFEX_DSMS_ENABLE
     endif
+endif
+
+# kunit tests options:
+ifeq ($(CONFIG_KUNIT), y)
+    GCOV_PROFILE := y
+    DEFEX_DEFINES += -DDEFEX_KUNIT_ENABLED
+else
+    DEFEX_DEFINES += -D__visible_for_testing=static
 endif
 
 ccflags-y := -Wformat
@@ -128,7 +131,6 @@ EXTRA_CFLAGS += -I$(srctree)/$(src)/cert
 EXTRA_AFLAGS += -Isecurity/samsung/defex_lsm/cert
 
 ifneq ($(wildcard  $(srctree)/$(src)/pack_rules.c),)
-    DEFEX_DEFINES += -DDEFEX_USE_PACKED_RULES
     EXTRA_CFLAGS += $(DEFEX_DEFINES)
     EXTRA_AFLAGS += $(DEFEX_DEFINES)
     hostprogs-y := pack_rules
@@ -145,7 +147,7 @@ ifneq ($(wildcard  $(srctree)/$(src)/pack_rules.c),)
     quiet_cmd_mkey = MAKEKEY $<
           cmd_mkey = cp -n $< $@ 2>/dev/null || true
 
-    $(obj)/core/defex_sysfs.o: $(obj)/pack_rules $(srctree)/$(src)/defex_packed_rules.inc
+    $(obj)/core/defex_rules_proc.o: $(obj)/pack_rules $(srctree)/$(src)/defex_packed_rules.inc
 
     $(obj)/cert/defex_cert.o: $(obj)/cert/pubkey_eng.der $(obj)/cert/pubkey_user.der
 
@@ -178,3 +180,5 @@ else
     EXTRA_CFLAGS += $(DEFEX_DEFINES)
     EXTRA_AFLAGS += $(DEFEX_DEFINES)
 endif
+
+obj-$(CONFIG_SECURITY_DEFEX) := $(defex-y)

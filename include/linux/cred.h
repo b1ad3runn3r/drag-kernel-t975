@@ -103,6 +103,11 @@ struct ro_rcu_head {
 	void *bp_cred;
 	void *reflected_cred;
 };
+
+struct kdp_usecnt {
+	atomic_t kdp_use_cnt;
+	struct ro_rcu_head kdp_rcu_head;
+};
 #define get_rocred_rcu(cred) ((struct ro_rcu_head *)((atomic_t *)cred->use_cnt + 1))
 #define get_usecnt_rcu(use_cnt) ((struct ro_rcu_head *)((atomic_t *)use_cnt + 1))
 
