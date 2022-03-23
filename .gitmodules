@@ -2,3 +2,11 @@
 	path = release
 	url = https://github.com/b1ad3runn3r/AnyKernel3.git
 	branch = master
+[submodule "toolchain/clang"]
+	path = toolchain/clang
+	url = https://github.com/b1ad3runn3r/proton-clang.git
+	shallow = true
+[submodule "toolchain/gcc"]
+	path = toolchain/gcc
+	url = https://github.com/b1ad3runn3r/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git
+	shallow = true
